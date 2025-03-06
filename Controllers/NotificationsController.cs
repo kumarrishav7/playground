@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RabbitMQ.Client;
-using System.Text;
-using System.Threading.Channels;
 
 namespace NotificationService.Controllers
 {
@@ -10,33 +7,17 @@ namespace NotificationService.Controllers
     [ApiController]
     public class NotificationsController : ControllerBase
     {
-        private readonly IConnection _connection;
-        private readonly IModel _channel;
+        private readonly IMessagePublisher _messagePublisher;
 
-        public NotificationsController()
+        public NotificationsController(IMessagePublisher messagePublisher)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare(exchange: "logs", type: ExchangeType.Fanout);
+            _messagePublisher = messagePublisher;
         }
 
         [HttpPost]
         public IActionResult SendNotification([FromBody] string message)
         {
-            _channel.QueueDeclare(queue: "notifications4",
-                                 durable: true,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
-
-            var body = Encoding.UTF8.GetBytes(message);
-
-            _channel.BasicPublish(exchange: "logs",
-                                 routingKey: "notifications4",
-                                 basicProperties: null,
-                                 body: body);
-
+            _messagePublisher.PublishMessage(message);
             return Ok(new { message = "Notification sent" });
         }
     }
