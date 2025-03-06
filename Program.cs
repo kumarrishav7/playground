@@ -1,4 +1,5 @@
 using NotificationService;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<MessageRepository>();
+
+builder.Services.AddSingleton<IConnection>(provider =>
+{
+    var factory = new ConnectionFactory() { HostName = builder.Configuration["RabbitMQ:HostName"] }; // Assume you have it in your appsettings.json
+    return factory.CreateConnection();
+});
+
+builder.Services.AddSingleton<IQueueChannel, RabbitMqChannel>();
+builder.Services.AddSingleton<IMessagePublisher, RabbitMqMessagePublisher>();
 
 var app = builder.Build();
 
