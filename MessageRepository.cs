@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Threading.Tasks;
 
 public class MessageRepository
 {
@@ -9,11 +7,8 @@ public class MessageRepository
 
     public MessageRepository(IConfiguration configuration)
     {
-        //var database = mongoClient.GetDatabase("NotificationDB");
-        //_messages = database.GetCollection<Message>("Notifications");
-
         var client = new MongoClient(configuration.GetConnectionString("MongoDb"));
-        var database = client.GetDatabase("NotificationDB"); // Use the database name you chose
+        var database = client.GetDatabase("NotificationDB");
         _messages = database.GetCollection<Message>("Notifications");
     }
 
@@ -35,7 +30,7 @@ public class MessageRepository
 
 public class Message
 {
-    public ObjectId Id { get; set; }  // MongoDB will auto-generate an Id
+    public ObjectId Id { get; set; }
     public string SenderId { get; set; }
     public string ReceiverId { get; set; }
     public string Content { get; set; }
