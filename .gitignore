@@ -6,3 +6,10 @@
 *.userosscache
 *.suo
 *.userprefs
+# Ignore build directories
+bin/
+obj/
+
+# Ignore other build artifacts
+*.log
+
