@@ -7,7 +7,6 @@ builder.Services.AddApplicationInsightsTelemetry(options =>
 {
     options.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
 });
-
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
@@ -17,11 +16,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 builder.Services.AddSingleton<IConnection>(provider =>
 {
-    var factory = new ConnectionFactory() { HostName = builder.Configuration["RabbitMQ:HostName"] }; 
-    return factory.CreateConnection();
+    var factory = new ConnectionFactory()
+    {
+        HostName = builder.Configuration["RabbitMQ:HostName"],
+    };
+
+    try
+    {
+        return factory.CreateConnection();
+    }
+    catch (Exception ex)
+    {
+        throw new InvalidOperationException("Could not create RabbitMQ connection.", ex);
+    }
 });
 
 builder.Services.AddSingleton<MessageRepository>();
@@ -39,9 +48,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
