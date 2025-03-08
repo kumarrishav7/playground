@@ -4,13 +4,9 @@ using RabbitMQ.Client;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddHostedService<RabbitMqService>();
-builder.Services.AddHostedService<Consumer2Service>();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<MessageRepository>();
 
 builder.Services.AddSingleton<IConnection>(provider =>
 {
@@ -18,6 +14,9 @@ builder.Services.AddSingleton<IConnection>(provider =>
     return factory.CreateConnection();
 });
 
+builder.Services.AddSingleton<MessageRepository>();
+builder.Services.AddHostedService<RabbitMqService>();
+builder.Services.AddHostedService<Consumer2Service>();
 builder.Services.AddSingleton<IQueueChannel, RabbitMqChannel>();
 builder.Services.AddSingleton<IMessagePublisher, RabbitMqMessagePublisher>();
 
