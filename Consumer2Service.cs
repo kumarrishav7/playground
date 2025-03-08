@@ -4,23 +4,16 @@ using System.Text;
 
 namespace NotificationService
 {
-    public class Consumer2Service : IHostedService, IDisposable
+    public class Consumer2Service(ILogger<RabbitMqService> logger,
+                           IConnection connection,
+                           MessageRepository messageRepository) : IHostedService, IDisposable
     {
-        private readonly ILogger<RabbitMqService> _logger;
-        private readonly IConnection _connection;
-        private IModel _channel;
+        private readonly ILogger<RabbitMqService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        private readonly IConnection _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+        private IModel? _channel;
         private const string QueueName = "notifications4";
-        private readonly MessageRepository _messageRepository;
+        private readonly MessageRepository _messageRepository = messageRepository ?? throw new ArgumentNullException(nameof(messageRepository));
         private readonly string _exchangeName = "logs";
-
-        public Consumer2Service(ILogger<RabbitMqService> logger,
-                               IConnection connection,
-                               MessageRepository messageRepository)
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _messageRepository = messageRepository ?? throw new ArgumentNullException(nameof(messageRepository));
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-        }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -68,7 +61,7 @@ namespace NotificationService
         {
             _channel.ExchangeDeclare(exchange: _exchangeName, type: ExchangeType.Fanout);
 
-            _channel.QueueDeclare(queue: QueueName,
+            _channel?.QueueDeclare(queue: QueueName,
                                  durable: true,
                                  exclusive: false,
                                  autoDelete: false,
@@ -93,12 +86,12 @@ namespace NotificationService
                 };
 
                 await _messageRepository.AddMessageAsync(message);
-                _channel.BasicAck(args.DeliveryTag, false);
+                _channel?.BasicAck(args.DeliveryTag, false);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error processing message: {ex.Message}");
-                _channel.BasicNack(args.DeliveryTag, false, true);
+                _channel?.BasicNack(args.DeliveryTag, false, true);
             }
         }
     }
