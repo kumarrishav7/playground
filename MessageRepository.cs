@@ -31,9 +31,9 @@ public class MessageRepository
 public class Message
 {
     public ObjectId Id { get; set; }
-    public string SenderId { get; set; }
-    public string ReceiverId { get; set; }
-    public string Content { get; set; }
+    public required string SenderId { get; set; }
+    public required string ReceiverId { get; set; }
+    public required string Content { get; set; }
     public DateTime Timestamp { get; set; }
 }
 
