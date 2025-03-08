@@ -24,7 +24,7 @@ namespace NotificationService.Controllers
         [HttpGet]
         public IActionResult GetNotification()
         {
-            return Ok();
+            return Ok("good");
         }
     }
 
