@@ -20,6 +20,12 @@ namespace NotificationService.Controllers
             _messagePublisher.PublishMessage(message);
             return Ok(new { message = "Notification sent" });
         }
+
+        [HttpGet]
+        public IActionResult GetNotification()
+        {
+            return Ok();
+        }
     }
 
 }
