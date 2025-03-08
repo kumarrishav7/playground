@@ -22,7 +22,10 @@ builder.Services.AddSingleton<IConnection>(provider =>
     var telemetryClient = provider.GetRequiredService<TelemetryClient>(); // Inject TelemetryClient
     try
     {
-        var factory = new ConnectionFactory() { HostName = builder.Configuration["RabbitMQ:HostName"] };
+        var factory = new ConnectionFactory() { HostName = builder.Configuration["RabbitMQ:HostName"],
+                                                UserName = builder.Configuration["RabbitMQ:UserName"],
+                                                Password = builder.Configuration["RabbitMQ:Password"],
+        };
         return factory.CreateConnection();
     }
     catch (Exception ex)
