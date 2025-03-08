@@ -11,9 +11,9 @@ builder.Services.AddSingleton<IConnection>(provider =>
 {
     try
     {
-        var factory = new ConnectionFactory() { HostName = "20.116.232.7",
-                                                UserName = "kumarrishav7",
-                                                Password = "Llbgdbg@123",
+        var factory = new ConnectionFactory() { HostName = builder.Configuration["RabbitMQ:HostName"],
+                                                UserName = builder.Configuration["RabbitMQ:UserName"],
+                                                Password = builder.Configuration["RabbitMQ:Password"],
         };
         return factory.CreateConnection();
     }
