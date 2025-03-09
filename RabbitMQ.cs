@@ -47,7 +47,7 @@ namespace NotificationService
         public void PublishMessage(string message)
         {
             var body = Encoding.UTF8.GetBytes(message);
-            _queueChannel.Publish("logs", "notifications4", body);
+            _queueChannel.Publish("logs", "", body);
         }
     }
 
