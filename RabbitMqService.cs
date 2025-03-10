@@ -11,7 +11,7 @@ namespace NotificationService
         private readonly ILogger<RabbitMqService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         private readonly IConnection _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         private IModel? _channel;
-        private const string QueueName = "notifications4";
+        private const string QueueName = "notifications6";
         private readonly MessageRepository _messageRepository = messageRepository ?? throw new ArgumentNullException(nameof(messageRepository));
         private readonly string _exchangeName = "logs";
 
