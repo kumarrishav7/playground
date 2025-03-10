@@ -43,4 +43,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
+app.UseCors(options =>
+    options.WithOrigins("http://localhost:4200", "https://ambitious-beach-032f22500.6.azurestaticapps.net")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 app.Run();

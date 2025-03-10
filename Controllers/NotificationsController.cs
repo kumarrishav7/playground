@@ -15,9 +15,9 @@ namespace NotificationService.Controllers
         }
 
         [HttpPost]
-        public IActionResult SendNotification([FromBody] string message)
+        public IActionResult SendNotification([FromBody] RequestModel message)
         {
-            _messagePublisher.PublishMessage(message);
+            _messagePublisher.PublishMessage(message.message);
             return Ok(new { message = "Notification sent" });
         }
 
@@ -26,6 +26,11 @@ namespace NotificationService.Controllers
         {
             return Ok("good");
         }
+    }
+
+    public class RequestModel
+    {
+        public string message { get; set; }
     }
 
 }
