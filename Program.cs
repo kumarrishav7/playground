@@ -29,8 +29,8 @@ builder.Services.AddSingleton<IConnection>(provider =>
 });
 
 builder.Services.AddSingleton<MessageRepository>();
-builder.Services.AddHostedService<RabbitMqService>();
-builder.Services.AddHostedService<Consumer2Service>();
+//builder.Services.AddHostedService<RabbitMqService>();
+//builder.Services.AddHostedService<Consumer2Service>();
 builder.Services.AddSingleton<IQueueChannel, RabbitMqChannel>();
 builder.Services.AddSingleton<IMessagePublisher, RabbitMqMessagePublisher>();
 

@@ -4,11 +4,11 @@ using System.Text;
 
 namespace NotificationService
 {
-    public class Consumer2Service(ILogger<RabbitMqService> logger,
+    public class Consumer2Service(ILogger<Consumer2Service> logger,
                            IConnection connection,
                            MessageRepository messageRepository) : IHostedService, IDisposable
     {
-        private readonly ILogger<RabbitMqService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger<Consumer2Service> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         private readonly IConnection _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         private IModel? _channel;
         private const string QueueName = "notifications5";
