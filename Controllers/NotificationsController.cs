@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace NotificationService.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("sliding")]
     public class NotificationsController : ControllerBase
     {
         private readonly IMessagePublisher _messagePublisher;
@@ -30,7 +32,7 @@ namespace NotificationService.Controllers
 
     public class RequestModel
     {
-        public string message { get; set; }
+        public required string message { get; set; }
     }
 
 }

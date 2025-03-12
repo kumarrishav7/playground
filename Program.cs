@@ -1,3 +1,5 @@
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using NotificationService;
 using RabbitMQ.Client;
 
@@ -28,6 +30,19 @@ builder.Services.AddSingleton<IConnection>(provider =>
     }
 });
 
+builder.Services.AddRateLimiter(rateLimiter =>
+{
+    rateLimiter.AddSlidingWindowLimiter("sliding", options =>
+    {
+        options.Window = TimeSpan.FromSeconds(60);
+        options.SegmentsPerWindow = 6;
+        // Define the maximum number of requests allowed within the window
+        options.PermitLimit = 8000;
+        // Set the queue processing order for requests beyond the limit
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+});
+
 builder.Services.AddSingleton<MessageRepository>();
 //builder.Services.AddHostedService<RabbitMqService>();
 //builder.Services.AddHostedService<Consumer2Service>();
@@ -42,6 +57,7 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.UseRateLimiter();
 
 app.UseCors(options =>
     options.WithOrigins("http://localhost:4200", "https://ambitious-beach-032f22500.6.azurestaticapps.net")
