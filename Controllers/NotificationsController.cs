@@ -10,10 +10,12 @@ namespace NotificationService.Controllers
     public class NotificationsController : ControllerBase
     {
         private readonly IMessagePublisher _messagePublisher;
+        private readonly MessageRepository _messageRepository;
 
-        public NotificationsController(IMessagePublisher messagePublisher)
+        public NotificationsController(IMessagePublisher messagePublisher, MessageRepository messageRepository)
         {
             _messagePublisher = messagePublisher;
+            _messageRepository = messageRepository;
         }
 
         [HttpPost]
@@ -24,9 +26,10 @@ namespace NotificationService.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetNotification()
+        public async Task<ActionResult<IEnumerable<Message>>> GetNotification()
         {
-            return Ok("good");
+            List<Message> _m = await _messageRepository.GetMessagesAsync("SenderId", "ReceiverId");
+            return Ok(_m);
         }
     }
 
