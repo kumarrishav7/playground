@@ -55,15 +55,9 @@ builder.Services.AddSingleton<IQueueChannel, RabbitMqChannel>();
 builder.Services.AddSingleton<IMessagePublisher, RabbitMqMessagePublisher>();
 
 var app = builder.Build();
-app.Use(async (context, next) =>
-{
-    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-    logger.LogInformation("Handling request: {Method} {Url}", context.Request.Method, context.Request.Path);
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
-    await next.Invoke();
-
-    logger.LogInformation("Finished handling request: {Method} {Url}", context.Request.Method, context.Request.Path);
-});
 app.UseSwagger();
 app.UseSwaggerUI();
 
