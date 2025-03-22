@@ -5,6 +5,11 @@ using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.AddConsole();
+});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,11 +26,8 @@ builder.Services.AddSingleton<IConnection>(provider =>
     }
     catch (Exception ex)
     {
-        // Log locally using the logger
-        var logger = provider.GetRequiredService<ILogger<Program>>(); // Get ILogger from DI container
+        var logger = provider.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "RabbitMQ connection failed.");
-
-        // Rethrow the exception to fail the application startup
         throw new InvalidOperationException("Failed to create RabbitMQ connection.", ex);
     }
 });
@@ -36,9 +38,7 @@ builder.Services.AddRateLimiter(rateLimiter =>
     {
         options.Window = TimeSpan.FromSeconds(60);
         options.SegmentsPerWindow = 6;
-        // Define the maximum number of requests allowed within the window
         options.PermitLimit = 8000;
-        // Set the queue processing order for requests beyond the limit
         options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
 });
@@ -50,7 +50,15 @@ builder.Services.AddSingleton<IQueueChannel, RabbitMqChannel>();
 builder.Services.AddSingleton<IMessagePublisher, RabbitMqMessagePublisher>();
 
 var app = builder.Build();
+app.Use(async (context, next) =>
+{
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("Handling request: {Method} {Url}", context.Request.Method, context.Request.Path);
 
+    await next.Invoke();
+
+    logger.LogInformation("Finished handling request: {Method} {Url}", context.Request.Method, context.Request.Path);
+});
 app.UseSwagger();
 app.UseSwaggerUI();
 
